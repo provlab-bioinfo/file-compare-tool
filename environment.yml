@@ -1,0 +1,11 @@
+name: file-compare-tool
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - conda-forge::pandas=1.5.3
+  - conda-forge::pyyaml=0.2.5
+  - pip
+  - pip:
+    - -r requirements.txt
