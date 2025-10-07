@@ -6,6 +6,19 @@ import search_tools as st
 from itertools import chain
 import yaml
 
+def stripIDs(df, ids):
+
+    print("start")
+
+    for id in ids:
+        id_lst = df[id].tolist()
+        prefix = os.path.commonprefix(id_lst)
+        suffix = os.path.commonprefix([col[::-1] for col in id_lst])[::-1]
+        df[id] = df[id].str.removeprefix(prefix)
+        df[id] = df[id].str.removesuffix(suffix)
+
+    return df
+
 def getData(glob, dir, ids, cols, stripID = False):
     # Find the file
     file = st.findFiles2(f"{dir}/{glob}")
@@ -19,6 +32,9 @@ def getData(glob, dir, ids, cols, stripID = False):
     bad_cols = list(set(ids + cols).difference(data.columns))
     if bad_cols: raise KeyError(f"Cannot find cols '{bad_cols}' in '{file}'")
 
+    #if (stripID): 
+    data = stripIDs(data, ids)
+
     return data[ids + cols]
 
 def main(folder1, folder2, yaml_path):
@@ -31,12 +47,6 @@ def main(folder1, folder2, yaml_path):
     results = []
 
     for file in files:
-        file1 = st.findFiles(file.get("path"), target_directory = folder1)
-        if (len(file1) > 1): raise LookupError(f"Duplicate files found in folder: {file1}")
-        
-        file2 = st.findFiles(file.get("path"), target_directory = folder2)
-        if (len(file2) > 1): raise LookupError(f"Duplicate files found in folder: {file2}")
-        
         ids = [item.strip() for item in file.get("id").split(',')]
         cols = [item.strip() for item in file.get("columns").split(',')]
         data1 = getData(file.get("path"), folder1, ids, cols, file.get("stripID"))
@@ -66,7 +76,7 @@ def generateReport(metadata, results):
         report = f"{report}\nNo errors detected"
 
     print (report)
-    print("bleh")
+
 
 def yaml_type(p):
     ext = Path(p).suffix
