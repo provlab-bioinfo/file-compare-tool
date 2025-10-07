@@ -6,14 +6,20 @@ import search_tools as st
 from itertools import chain
 import yaml
 
-def compare(folder1, folder2, yaml):
-    print ("blah")
+def getData(glob, dir, ids, cols, stripID = False):
+    # Find the file
+    file = st.findFiles2(f"{dir}/{glob}")
+    if (len(file) > 1): raise LookupError(f"Duplicate files found for '{glob}' in folder '{dir}'")
+    if (len(file) < 1): raise LookupError(f"Cannot find file matching '{glob}' in folder '{dir}'")
 
-def compareFile(file1, file2, ids, columns):    
-    data1 = st.importToDataFrame(file1)[ids + columns]
-    data2 = st.importToDataFrame(file2)[ids + columns]
-    cmp = Comparison(data1, data2, join_columns=ids)
-    return cmp
+    # Import the data
+    data = st.importToDataFrame(file[0])
+
+    # Check if desired cols are present
+    bad_cols = list(set(ids + cols).difference(data.columns))
+    if bad_cols: raise KeyError(f"Cannot find cols '{bad_cols}' in '{file}'")
+
+    return data[ids + cols]
 
 def main(folder1, folder2, yaml_path):
 
@@ -33,11 +39,17 @@ def main(folder1, folder2, yaml_path):
         
         ids = [item.strip() for item in file.get("id").split(',')]
         cols = [item.strip() for item in file.get("columns").split(',')]
+        data1 = getData(file.get("path"), folder1, ids, cols, file.get("stripID"))
+        data2 = getData(file.get("path"), folder2, ids, cols, file.get("stripID"))
+        
+        # Do the comparison
+        cmp = Comparison(data1, data2, join_columns=ids)
+        if cmp.intersect_rows().empty: raise IndexError(f"No comparisons found for '{file.get('path')}'. Maybe the IDs do not match?")
 
-        cmp = compareFile(file1[0], file2[0], ids, cols).diverging_subset()
-
+        # Extract non-matching data
+        cmp = cmp.diverging_subset()
         if not cmp.empty: results.append((file.get("path"),cmp))
-
+            
     generateReport(metadata, results)
 
 def generateReport(metadata, results):
