@@ -6,6 +6,7 @@ import search_tools as st
 from itertools import chain
 import pandas as pd
 import yaml
+from datetime import date
 
 def stripIDs(df: pd.DataFrame, ids: list[str]):
     """Strips the common prefix and suffix off of ID columns in a dataframe
@@ -72,7 +73,16 @@ def main(folder1: str, folder2: str, yaml_path: str):
         data2 = getData(file.get("path"), folder2, ids, cols, file.get("stripID"))
         
         # Do the comparison
-        cmp = Comparison(data1, data2, join_columns=ids)
+
+        tolerance = str(file.get("tolerance"))
+        absolute = relative = 0
+        if (tolerance != "None"):
+            if "%" in tolerance:
+                relative = float(tolerance.replace("%", ""))
+            else:
+                absolute = float(tolerance)
+
+        cmp = Comparison(data1, data2, join_columns=ids, abs_tol = absolute, rel_tol = relative, df1_name='original', df2_name='new')
         if cmp.intersect_rows().empty: raise IndexError(f"No comparisons found for '{file.get('path')}'. Maybe the IDs do not match?")
 
         # Extract non-matching data
@@ -88,7 +98,9 @@ def generateReport(metadata: str, results: str):
     """
     report = (
         f"{metadata.get('title')}\n"
-        f"{metadata.get('folder1_name')} ==> {metadata.get('folder2_name')}"
+        f"Date: {date.today().strftime('%d %b %Y')}\n"
+        f"{metadata.get('folder1_name')} ==> {metadata.get('folder2_name')}\n\n"
+        f"-----------------------------\n"
     )
 
     # Concat the diverging data
