@@ -89,7 +89,7 @@ def main(folder1: str, folder2: str, yaml_path: str):
 
         # Extract non-matching data
         cmp = cmp.diverging_subset()
-        if not cmp.empty: results.append((file.get("path"),cmp))
+        if not cmp.empty: results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
             
     generateReport(metadata, results)
 
@@ -100,15 +100,15 @@ def generateReport(metadata: str, results: str):
     """
     report = (
         f"{metadata.get('title')}\n"
-        f"Date: {date.today().strftime('%d %b %Y')}\n"
-        f"{metadata.get('folder1_name')} ==> {metadata.get('folder2_name')}\n\n"
-        f"-----------------------------\n"
+        f"{metadata.get('folder1_name')} ==> {metadata.get('folder2_name')}\n"
+        f"Date: {date.today().strftime('%d %b %Y')}\n\n"
+        f"-----------------------------"
     )
 
     # Concat the diverging data
     if results:
         for result in results:
-            report = f"{report}\n\n{result[0]}\n{result[1].to_string(index=False)}"
+            report = f"{report}\n\n{result[0]}\n{result[1].to_markdown(index=False, tablefmt='rounded_outline')}{result[2]}"
     else :
         report = f"{report}\nNo errors detected"
 
