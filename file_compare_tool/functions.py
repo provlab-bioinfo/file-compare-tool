@@ -81,15 +81,21 @@ def main(folder1: str, folder2: str, yaml_path: str):
         if (tolerance != "None"):
             if "%" in tolerance:
                 relative = float(tolerance.replace("%", ""))
+                tolerance = f"\nTolerance ± {relative}%"
             else:
                 absolute = float(tolerance)
+                tolerance = f"\nTolerance ± {absolute}"
+        else:
+            tolerance = ""
 
         cmp = Comparison(data1, data2, join_columns=ids, abs_tol = absolute, rel_tol = relative, df1_name='original', df2_name='new')
         if cmp.intersect_rows().empty: raise IndexError(f"No comparisons found for '{file.get('path')}'. Maybe the IDs do not match?")
 
-        # Extract non-matching data
         cmp = cmp.diverging_subset()
-        if not cmp.empty: results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
+
+        # Extract non-matching data
+        if cmp.empty: cmp = pd.DataFrame(columns=['No discrepancies found'])
+        results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
             
     generateReport(metadata, results)
 
@@ -113,7 +119,6 @@ def generateReport(metadata: str, results: str):
         report = f"{report}\nNo errors detected"
 
     print (report)
-
 
 def yaml_type(p: str):
     """Defines the YAML type
