@@ -40,16 +40,18 @@ def getData(glob: str, dir: str, ids: list[str], cols:list[str], stripID: bool =
     file = st.findFiles2(f"{dir}/{glob}")
     if (len(file) > 1): raise LookupError(f"Multiple files found for '{glob}' in folder '{dir}'. Please refine search terms.")
     if (len(file) < 1): raise LookupError(f"Cannot find file matching '{glob}' in folder '{dir}'")
+    file = file[0]
 
     # Import the data
-    data = st.importToDataFrame(file[0])
+    data = st.importToDataFrame(file)
 
     # Check if desired cols are present
     bad_cols = list(set(ids + cols).difference(data.columns))
     if bad_cols: raise KeyError(f"Cannot find cols '{bad_cols}' in '{file}'")
 
     if (stripID): data = stripIDs(data, ids)
-    return data[ids + cols]
+
+    return (file, data[ids + cols])
 
 def main(folder1: str, folder2: str, yaml_path: str):
     """Compares files in two folders to determine any discrepancies
@@ -69,11 +71,11 @@ def main(folder1: str, folder2: str, yaml_path: str):
     for file in files:
         ids = [item.strip() for item in file.get("id").split(',')]
         cols = [item.strip() for item in file.get("columns").split(',')]
-        data1 = getData(file.get("path"), folder1, ids, cols, file.get("stripID"))
-        data2 = getData(file.get("path"), folder2, ids, cols, file.get("stripID"))
+
+        file1, data1 = getData(file.get("path"), folder1, ids, cols, file.get("stripID"))
+        file2, data2 = getData(file.get("path"), folder2, ids, cols, file.get("stripID"))
         
         # Do the comparison
-
         tolerance = str(file.get("tolerance"))
         absolute = relative = 0
         if (tolerance != "None"):
