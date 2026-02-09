@@ -2,11 +2,11 @@
 file:                               # .xlsx, .csv, .tsv
 	id:                               # Name of column for row-wise comparison
 	columns:                          # Columns to compare
-	ignore_case:                      # TRUE or FALSE
-	ignore_whitespace:                # TRUE or FALSE
+	ignore_case:                      # True or False
+	ignore_whitespace:                # True or False
 	
 # For numerical values. 
 file:                               # .xlsx, .csv, .tsv
 	id:                               # Name of column for row-wise comparison
 	columns:                          # Columns to compare
-	deviation:                        # Deviation can be as absolute value or a percent (e.g., 0.25 or 10%)
+	tolerance:                        # Tolerance can be as absolute value or percent (e.g., 0.25 or 10%)

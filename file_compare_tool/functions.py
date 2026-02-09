@@ -74,9 +74,14 @@ def main(folder1: str, folder2: str, yaml_path: str):
 
         file1, data1 = getData(file.get("path"), folder1, ids, cols, file.get("stripID"))
         file2, data2 = getData(file.get("path"), folder2, ids, cols, file.get("stripID"))
-        
-        # Do the comparison
+
+        evalBool = lambda b: b == "True"
+
+        ignore_case = evalBool(load.get("ignore_case", 'False'))
+        ignore_whitespace = evalBool(load.get("ignore_whitespace", 'False'))
         tolerance = str(file.get("tolerance"))
+
+        # Do the comparison
         absolute = relative = 0
         if (tolerance != "None"):
             if "%" in tolerance:
@@ -88,7 +93,8 @@ def main(folder1: str, folder2: str, yaml_path: str):
         else:
             tolerance = ""
 
-        cmp = Comparison(data1, data2, join_columns=ids, abs_tol = absolute, rel_tol = relative, df1_name='original', df2_name='new')
+        cmp = Comparison(data1, data2, join_columns=ids, abs_tol = absolute, rel_tol = relative, df1_name='original', df2_name='new', 
+                         ignore_spaces = ignore_whitespace, ignore_case = ignore_case)
         if cmp.intersect_rows().empty: raise IndexError(f"No comparisons found for '{file.get('path')}'. Maybe the IDs do not match?")
 
         cmp = cmp.diverging_subset()
