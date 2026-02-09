@@ -53,14 +53,14 @@ def getData(glob: str, dir: str, ids: list[str], cols:list[str], stripID: bool =
 
     return (file, data[ids + cols])
 
-def main(folder1: str, folder2: str, yaml_path: str):
+def compare(folder1: str, folder2: str, yamlpath: str, outdir: str = ""):
     """Compares files in two folders to determine any discrepancies
     :param folder1: The path to the first folder
     :param folder2: The path to the second folder
     :param yaml_path: The path to the YAML containing the comparison criteria
     :raises IndexError: If no matching IDs are found
     """
-    with open(yaml_path, 'r') as f:
+    with open(yamlpath, 'r') as f:
         load = yaml.load(f, Loader=yaml.SafeLoader)        
         metadata = load.get("metadata")
         files = load.get("files")
@@ -103,9 +103,9 @@ def main(folder1: str, folder2: str, yaml_path: str):
         if cmp.empty: cmp = pd.DataFrame(columns=['No discrepancies found'])
         results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
             
-    generateReport(metadata, results)
+    generateReport(metadata, results, outdir)
 
-def generateReport(metadata: str, results: str):
+def generateReport(metadata: str, results: str, outdir: str = ""):
     """Generates the report from the comparison
     :param metadata: The metadata from YAML (title, names)
     :param results: The results from the comparison
@@ -124,7 +124,11 @@ def generateReport(metadata: str, results: str):
     else :
         report = f"{report}\nNo errors detected"
 
-    print (report)
+    if (outdir):
+        with open(os.path.join(outdir,"compare_report.txt"), "w") as file:
+            file.write(report)
+    else:
+        print (report)
 
 def yaml_type(p: str):
     """Defines the YAML type
@@ -152,5 +156,6 @@ if __name__ == "__main__":
     parser.add_argument('-f','--folder1', required=True, type=folder, help="Path to first folder")
     parser.add_argument('-g','--folder2', required=True, type=folder, help="Path to second folder")
     parser.add_argument('-y','--yaml', required=True, type=yaml_type, help="Path to the config YAML file")
+    parser.add_argument('-o','--outdir', required=False, type=folder, help="Path to output folder for report", default="")
     args = parser.parse_args()
-    main(args.folder1, args.folder2, args.yaml)
+    compare(args.folder1, args.folder2, args.yaml, args.outdir)
