@@ -19,5 +19,5 @@ setup(
         'build',
         'pip'
     ],
-    python_requires='>=3.11, <4'
+    python_requires='>=3.10, <4'
 )
