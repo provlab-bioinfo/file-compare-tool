@@ -1,3 +1,0 @@
-setuptools==67.6.1
-search_tools==0.1.0a0
-tabularcompare==0.0.4

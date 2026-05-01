@@ -14,10 +14,12 @@ setup(
     install_requires=[
         'pandas',
         'pyyaml',
-        'tabulate',
         'pyyaml',
         'build',
-        'pip'
+        'pip',
+        'tabularcompare',
+        'tabulate',
+        'search-tools @ git+ssh://git@github.com/provlab-bioinfo/search-tools'
     ],
     python_requires='>=3.10, <4'
 )

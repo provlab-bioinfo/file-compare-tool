@@ -4,9 +4,10 @@ channels:
   - bioconda
 dependencies:
   - python=3.11
-  - pandas=1.5.3
-  - pyyaml=0.2.5
-  - tabulate=0.9.0
+  - pandas
+  - pyyaml
   - pip
+  - tabulate
   - pip:
-    - -r requirements.txt
+    - tabularcompare
+    - git+https://github.com/provlab-bioinfo/search-tools
