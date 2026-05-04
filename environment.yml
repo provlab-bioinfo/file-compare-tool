@@ -6,8 +6,8 @@ dependencies:
   - python=3.11
   - pandas
   - pyyaml
-  - pip
   - tabulate
+  - pip
   - pip:
     - tabularcompare
     - git+https://github.com/provlab-bioinfo/search-tools

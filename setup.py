@@ -19,7 +19,7 @@ setup(
         'pip',
         'tabularcompare',
         'tabulate',
-        'search-tools @ git+ssh://git@github.com/provlab-bioinfo/search-tools'
+        'search-tools @ git+http://github.com/provlab-bioinfo/search-tools'
     ],
     python_requires='>=3.10, <4'
 )
