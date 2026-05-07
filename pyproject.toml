@@ -11,12 +11,11 @@ requires-python = ">=3.10, <4"
 
 dependencies = [ 'pandas',
         'pyyaml',
-        'pyyaml',
         'build',
         'pip',
         'tabularcompare',
         'tabulate',
-        'search-tools @ git+http://github.com/provlab-bioinfo/search-tools']
+        'search-tools @ git+https://github.com/provlab-bioinfo/search-tools']
 
 [project.urls]
 Homepage = "https://github.com/your_username/your_custom_project"
