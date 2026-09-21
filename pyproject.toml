@@ -15,7 +15,7 @@ dependencies = [ 'pandas',
         'pip',
         'tabularcompare',
         'tabulate',
-        'search-tools @ git+https://github.com/provlab-bioinfo/search-tools']
+        'search_tools @ git+https://github.com/provlab-bioinfo/search-tools']
 
 [project.urls]
 Homepage = "https://github.com/your_username/your_custom_project"

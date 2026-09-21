@@ -66,6 +66,7 @@ def compare(folder1: str, folder2: str, yamlpath: str, outdir: str = ""):
         files = load.get("files")
 
     results = []
+    discepancies = False
 
     # Iterate through each desired comparison file
     for file in files:
@@ -100,10 +101,16 @@ def compare(folder1: str, folder2: str, yamlpath: str, outdir: str = ""):
         cmp = cmp.diverging_subset()
 
         # Extract non-matching data
-        if cmp.empty: cmp = pd.DataFrame(columns=['No discrepancies found'])
+        if cmp.empty: 
+            cmp = pd.DataFrame(columns=['No discrepancies found'])
+        else:
+            discepancies = True
+            
         results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
             
     generateReport(metadata, results, outdir)
+
+    return (discepancies == False)
 
 def generateReport(metadata: str, results: str, outdir: str = ""):
     """Generates the report from the comparison
@@ -158,4 +165,5 @@ if __name__ == "__main__":
     parser.add_argument('-y','--yaml', required=True, type=yaml_type, help="Path to the config YAML file")
     parser.add_argument('-o','--outdir', required=False, type=folder, help="Path to output folder for report", default="")
     args = parser.parse_args()
+
     compare(args.folder1, args.folder2, args.yaml, args.outdir)
