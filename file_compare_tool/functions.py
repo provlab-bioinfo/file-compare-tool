@@ -106,7 +106,7 @@ def compare(folder1: str, folder2: str, yamlpath: str, outdir: str = ""):
         else:
             discepancies = True
             
-        results.append((f"File 1: {file1}\nFile 2: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
+        results.append((f"{metadata.get('folder1_name')}: {file1}\n{metadata.get('folder2_name')}: {file2}\nID: {', '.join(ids)} | Cols: {', '.join(cols)}",cmp.fillna(''),tolerance))
             
     generateReport(metadata, results, outdir)
 
